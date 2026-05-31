@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday — Low Stakes Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0c0c0c;
+    --white: #f6f3ee;
+    --cream: #eeebe3;
+    --ink: #1a1a1a;
+    --muted: #888;
+    --border: #d5d0c8;
+    --green: #1d6e42;
+    --green-bg: #eaf5ee;
+    --amber: #a85e10;
+    --amber-bg: #fef4e6;
+    --red: #b02020;
+    --red-bg: #fdf0f0;
+    --pink: #d44080;
+    --pink-bg: #fdeaf3;
+    --font-head: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background 0.4s, color 0.4s;
+    overflow-x: hidden;
+  }
+
+  /* ─── LAYOUT ─────────────────────────────────────────── */
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+    position: relative;
+    transition: transform 0.3s, filter 0.3s;
+  }
+  .page.tilt { transform: rotate(-0.8deg) scale(1.005); }
+  .page.glitch-page { animation: pglitch 0.12s steps(2) infinite; }
+
+  @keyframes pglitch {
+    0%   { transform: translate(0,0) skewX(0deg); }
+    25%  { transform: translate(-4px, 1px) skewX(-1.5deg); }
+    50%  { transform: translate(3px, -2px) skewX(1deg); }
+    75%  { transform: translate(-2px, 2px) skewX(2deg); }
+    100% { transform: translate(0,0) skewX(0deg); }
+  }
+
+  /* ─── HEADER ─────────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+    margin-bottom: 1.25rem;
+    transition: background 0.4s, color 0.4s;
+  }
+  .badge-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    transition: background 0.4s;
+  }
+
+  #page-title {
+    font-family: var(--font-head);
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+    transition: color 0.3s, letter-spacing 0.3s;
+  }
+  #page-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    font-style: italic;
+    transition: color 0.4s;
+  }
+
+  /* ─── SLIDER ─────────────────────────────────────────── */
+  .slider-wrap { margin-bottom: 1.25rem; }
+
+  .slider-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--green) 0%, var(--green) var(--fill, 0%), var(--border) var(--fill, 0%), var(--border) 100%);
+    outline: none;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+    transition: border-color 0.3s, transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+  .pct-display {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    transition: color 0.3s;
+  }
+
+  /* ─── STATUS BOX ─────────────────────────────────────── */
+  #status-box {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 13px;
+    line-height: 1.7;
+    min-height: 52px;
+    margin-bottom: 1rem;
+    background: var(--white);
+    transition: background 0.4s, border-color 0.4s, color 0.4s;
+    position: relative;
+  }
+  #status-box.warn  { background: var(--amber-bg); border-color: var(--amber); color: var(--amber); }
+  #status-box.error { background: var(--red-bg);   border-color: var(--red);   color: var(--red); }
+  #status-box.heart { background: var(--pink-bg);  border-color: var(--pink);  color: var(--pink); }
+
+  #extra-msg {
+    font-size: 12px;
+    color: var(--muted);
+    min-height: 1.6rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    transition: opacity 0.4s;
+  }
+
+  /* ─── DIVIDER ─────────────────────────────────────────── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 2rem 0 1.5rem;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--border);
+  }
+
+  /* ─── KNOCK KNOCK ─────────────────────────────────────── */
+  #knock-section { opacity: 0; transition: opacity 0.6s; }
+  #knock-section.reveal { opacity: 1; }
+
+  .knock-exchange {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .knock-row {
+    display: flex;
+    border-bottom: 0.5px solid var(--border);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  .knock-row:last-child { border-bottom: none; }
+  .knock-row.show { opacity: 1; transform: translateY(0); }
+
+  .knock-speaker {
+    width: 80px;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.9rem 1rem;
+    border-right: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+  }
+  .knock-text {
+    padding: 0.9rem 1.25rem;
+    font-size: 14px;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .knock-text.punchline {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  /* ─── YES/NO BUTTONS ─────────────────────────────────── */
+  #yesno-wrap {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s, transform 0.5s;
+    margin-top: 1.5rem;
+  }
+  #yesno-wrap.show { opacity: 1; transform: translateY(0); }
+
+  .yesno-question {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  .btn-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  #btn-yes {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 10px 24px;
+    border-radius: 5px;
+    border: 1.5px solid var(--green);
+    background: var(--green-bg);
+    color: var(--green);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  #btn-yes:hover { background: var(--green); color: var(--white); transform: scale(1.02); }
+  #btn-yes:active { transform: scale(0.98); }
+
+  #btn-no {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 10px 24px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  #btn-no:hover { border-color: #aaa; color: var(--ink); }
+
+  #no-count-wrap {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    min-height: 1.4rem;
+    margin-top: 0.75rem;
+    transition: color 0.3s;
+  }
+
+  /* ─── YES RESULT ─────────────────────────────────────── */
+  #yes-result {
+    display: none;
+    background: var(--green-bg);
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    padding: 1.5rem 1.5rem;
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+  #yes-result h3 {
+    font-family: var(--font-head);
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--green);
+    margin-bottom: 0.5rem;
+  }
+  #yes-result p {
+    font-size: 12px;
+    color: var(--green);
+    line-height: 1.7;
+  }
+
+  /* ─── HEARTS ─────────────────────────────────────────── */
+  #hearts-layer {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    overflow: hidden;
+  }
+  .hrt {
+    position: absolute;
+    font-size: 1.1rem;
+    animation: floatup 2.8s ease-in forwards;
+  }
+  @keyframes floatup {
+    0%   { opacity: 0.9; transform: translateY(0) scale(1); }
+    100% { opacity: 0;   transform: translateY(-200px) scale(0.4); }
+  }
+
+  /* ─── CRASH SCREEN ───────────────────────────────────── */
+  #crash-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0c0c0c;
+    color: #f6f3ee;
+    z-index: 1000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+  }
+  #crash-screen.show { display: flex; }
+
+  .crash-code {
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+  .crash-title {
+    font-family: var(--font-head);
+    font-size: clamp(1.6rem, 5vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: #f6f3ee;
+  }
+  .crash-sub {
+    font-size: 12px;
+    color: #666;
+    max-width: 320px;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .crash-sub span { color: #999; }
+  .crash-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 12px 28px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .crash-btn:hover { border-color: #666; color: #f6f3ee; }
+
+  .crash-log {
+    font-size: 10px;
+    color: #2a2a2a;
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    text-align: left;
+    max-width: 340px;
+    line-height: 1.9;
+  }
+  .crash-log span { color: #3a3a3a; }
+
+  /* ─── CONFETTI ───────────────────────────────────────── */
+  .conf-piece {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: conffall 2.5s ease-in forwards;
+  }
+  @keyframes conffall {
+    0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(105vh) rotate(700deg); }
+  }
+
+  /* ─── GLITCH TEXT ────────────────────────────────────── */
+  .glitch-txt { animation: gtxt 0.1s steps(2) infinite; }
+  @keyframes gtxt {
+    0%   { transform: translate(0); }
+    33%  { transform: translate(-3px, 1px); }
+    66%  { transform: translate(2px, -1px); }
+    100% { transform: translate(0); }
+  }
+
+  /* ─── SHAKE ──────────────────────────────────────────── */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    15%  { transform: translateX(-8px) rotate(-1deg); }
+    30%  { transform: translateX(8px)  rotate(1deg); }
+    45%  { transform: translateX(-6px) rotate(-0.5deg); }
+    60%  { transform: translateX(6px)  rotate(0.5deg); }
+    75%  { transform: translateX(-3px); }
+    90%  { transform: translateX(3px); }
+  }
+  .do-shake { animation: shake 0.5s; }
+
+  /* ─── FOOTER ─────────────────────────────────────────── */
+  footer {
+    margin-top: 4rem;
+    font-size: 10px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    border-top: 0.5px solid var(--border);
+    padding-top: 1rem;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<div id="hearts-layer"></div>
+
+<!-- CRASH SCREEN -->
+<div id="crash-screen">
+  <div class="crash-code">error 0x0000HEART — romantic_overflow_exception</div>
+  <div class="crash-title">page.exe has stopped working</div>
+  <p class="crash-sub">
+    The romantic intensity exceeded safe operational limits.<br>
+    <span>The website has developed feelings and cannot continue.</span><br><br>
+    This is your fault.
+  </p>
+  <button class="crash-btn" onclick="hardReset()">[ restart website (and dignity) ]</button>
+  <div class="crash-log">
+    > loading birthday_card.js ........... OK<br>
+    > applying boundary_protocols.css ... OK<br>
+    > checking romantic_intensity ........ <span style="color:#c04040">CRITICAL</span><br>
+    > calling emotional_suppressor() .... <span style="color:#c04040">FAILED</span><br>
+    > fatal: feelings cannot be contained<br>
+    > dumping core to /dev/heart ....... <span style="color:#c04040">DONE</span>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div class="page" id="page">
+  <div class="badge">
+    <span class="badge-dot" id="badge-dot"></span>
+    <span id="badge-text">website v1.0.0 — certified safe</span>
+  </div>
+
+  <div id="page-title">Happy Birthday</div>
+  <div id="page-sub">a low-stakes, boundary-respecting birthday card</div>
+
+  <!-- SLIDER -->
+  <div class="slider-wrap">
+    <div class="slider-meta">
+      <span>romantic intensity</span>
+      <span id="pct-val">0%</span>
+    </div>
+    <input type="range" id="chaos" min="0" max="100" value="0" step="1">
+    <div class="pct-display">← drag to find out what happens →</div>
+  </div>
+
+  <div id="status-box">All clear. Zero romantic energy detected. You are completely safe here.</div>
+  <div id="extra-msg"></div>
+
+  <!-- KNOCK KNOCK -->
+  <div class="divider">the ask</div>
+
+  <div id="knock-section">
+    <div class="knock-exchange">
+      <div class="knock-row" id="kr1">
+        <div class="knock-speaker">him</div>
+        <div class="knock-text">knock knock</div>
+      </div>
+      <div class="knock-row" id="kr2">
+        <div class="knock-speaker">her</div>
+        <div class="knock-text">...who's there?</div>
+      </div>
+      <div class="knock-row" id="kr3">
+        <div class="knock-speaker">him</div>
+        <div class="knock-text">what, when.</div>
+      </div>
+      <div class="knock-row" id="kr4">
+        <div class="knock-speaker">her</div>
+        <div class="knock-text">what, when... who?</div>
+      </div>
+      <div class="knock-row" id="kr5">
+        <div class="knock-speaker">him</div>
+        <div class="knock-text punchline">you, me, and a completely platonic date — whenever you're free.</div>
+      </div>
+    </div>
+
+    <!-- YES / NO -->
+    <div id="yesno-wrap">
+      <div class="yesno-question">so... thoughts?</div>
+      <div class="btn-row">
+        <button id="btn-yes" onclick="handleYes()">[ yes, okay fine ]</button>
+        <button id="btn-no" onclick="handleNo()">[ no ]</button>
+      </div>
+      <div id="no-count-wrap"></div>
+    </div>
+
+    <div id="yes-result">
+      <h3>outstanding.</h3>
+      <p>a platonic coffee has been confirmed. no agenda. no pressure. just caffeine and decent conversation.<br><br>the guy from the wedding is unreasonably delighted by this.</p>
+    </div>
+  </div>
+
+  <footer>
+    <span>birthday-card v1.0.0 — built with zero expectations</span>
+    <span>deployed by: that guy from the wedding</span>
+  </footer>
+</div>
+
+<script>
+const slider    = document.getElementById('chaos');
+const pctVal    = document.getElementById('pct-val');
+const statusBox = document.getElementById('status-box');
+const extraMsg  = document.getElementById('extra-msg');
+const pageEl    = document.getElementById('page');
+const titleEl   = document.getElementById('page-title');
+const subEl     = document.getElementById('page-sub');
+const badgeDot  = document.getElementById('badge-dot');
+const badgeTxt  = document.getElementById('badge-text');
+const heartsLayer = document.getElementById('hearts-layer');
+const knockSec  = document.getElementById('knock-section');
+const yesnoWrap = document.getElementById('yesno-wrap');
+const noCountEl = document.getElementById('no-count-wrap');
+const yesResult = document.getElementById('yes-result');
+
+let heartTimer  = null;
+let knockRevealed = false;
+let noCount = 0;
+let lastZone = -1;
+
+/* ─── ZONES ──────────────────────────────────────────────── */
+const zones = [
+  { min:0, max:5,
+    title: 'Happy Birthday',
+    sub: 'a low-stakes, boundary-respecting birthday card',
+    status: 'All clear. Zero romantic energy detected. You are completely safe here.',
+    extra: '',
+    badge: 'website v1.0.0 — certified safe',
+    badgeColor: '#1d6e42', badgeBg: '#eaf5ee',
+    statusClass: '',
+    hearts: false, tilt: false, glitch: false,
+    sliderColor: '#1d6e42'
+  },
+  { min:6, max:20,
+    title: 'Happy Birthday',
+    sub: 'a low-stakes, boundary-respecting birthday card',
+    status: 'Slightly elevated vibe. Within acceptable parameters. Nothing to report.',
+    extra: '(the slider was just tested out of curiosity. purely scientific.)',
+    badge: 'status: nominal',
+    badgeColor: '#1d6e42', badgeBg: '#eaf5ee',
+    statusClass: '',
+    hearts: false, tilt: false, glitch: false,
+    sliderColor: '#1d6e42'
+  },
+  { min:21, max:40,
+    title: 'happy birthday...',
+    sub: 'you look really nice, is all. objectively speaking.',
+    status: 'Warning: mild romantic energy building. The website is starting to feel things.',
+    extra: 'it is fine. this is fine. everything is completely, totally fine.',
+    badge: 'status: elevated',
+    badgeColor: '#a85e10', badgeBg: '#fef4e6',
+    statusClass: 'warn',
+    hearts: false, tilt: false, glitch: false,
+    sliderColor: '#a85e10'
+  },
+  { min:41, max:60,
+    title: 'happy birthday !!!',
+    sub: 'ok you are kind of great. this is an objective assessment.',
+    status: 'Caution. The website is blushing. This was not in the original spec.',
+    extra: 'roses are red, violets are blue — wait. no. forget that. forget that immediately.',
+    badge: 'status: blushing',
+    badgeColor: '#a85e10', badgeBg: '#fef4e6',
+    statusClass: 'warn',
+    hearts: true, tilt: true, glitch: false,
+    sliderColor: '#d44080'
+  },
+  { min:61, max:80,
+    title: 'HAPPY BIRTHDAY',
+    sub: 'i think about the wedding sometimes. this is embarrassing to admit.',
+    status: 'CRITICAL: boundary protocols failing. Page elements becoming emotionally unstable.',
+    extra: 'the website would like to formally apologize for what it is about to do.',
+    badge: 'status: CRITICAL',
+    badgeColor: '#b02020', badgeBg: '#fdf0f0',
+    statusClass: 'error',
+    hearts: true, tilt: true, glitch: false,
+    sliderColor: '#b02020'
+  },
+  { min:81, max:99,
+    title: 'H̶A̶P̶P̶Y̶ B̶I̶R̶T̶H̶D̶A̶Y̶',
+    sub: '[website sobbing quietly in the corner]',
+    status: 'SYSTEM FAILURE IMMINENT. The website has feelings. This was not the plan.',
+    extra: 'ok listen. you were the funniest person at that wedding. you said "no strings attached" and yet here we are, a whole website later. the irony is not lost.',
+    badge: 'status: MELTDOWN',
+    badgeColor: '#b02020', badgeBg: '#fdf0f0',
+    statusClass: 'heart',
+    hearts: true, tilt: true, glitch: true,
+    sliderColor: '#b02020'
+  },
+];
+
+/* ─── NO BUTTON ESCALATION ───────────────────────────────── */
+const noResponses = [
+  { no: 'no',         yesLabel: '[ yes, okay fine ]',               note: null },
+  { no: 'still no',  yesLabel: '[ yes (just one coffee) ]',         note: 'the "yes" is getting more specific. that is called desperation.' },
+  { no: 'no again',  yesLabel: '[ yes (i will pay, obviously) ]',   note: 'okay he is throwing in free coffee now. bold move.' },
+  { no: 'no x3',     yesLabel: '[ yes (i will also bring snacks) ]', note: 'snacks have entered the negotiation. this is escalating.' },
+  { no: 'no x4',     yesLabel: '[ yes (snacks + good conversation guaranteed) ]', note: 'he has made legally binding promises about conversation quality.' },
+  { no: 'no x5',     yesLabel: '[ yes (absolutely zero agenda, pinky promise) ]', note: 'the pinky promise is new. questionable legal standing but genuine.' },
+  { no: 'no x6',     yesLabel: '[ yes (i will literally just sit quietly if you want) ]', note: 'he is now offering to be silent. this is either sweet or alarming.' },
+  { no: 'no x7',     yesLabel: '[ yes (okay I give up, have a great birthday) ]', note: 'wait. did he just... give up? with grace? that is oddly charming.' },
+  { no: 'no x8',     yesLabel: '[ yes (fine I am still here though) ]', note: 'he is still here. the audacity is almost impressive at this point.' },
+];
+
+/* ─── APPLY ZONE ─────────────────────────────────────────── */
+function applyZone(z) {
+  titleEl.textContent = z.title;
+  subEl.textContent   = z.sub;
+  statusBox.textContent = z.status;
+  statusBox.className = z.statusClass;
+  extraMsg.textContent = z.extra;
+  badgeTxt.textContent = z.badge;
+  badgeDot.style.background = z.badgeColor;
+  badgeTxt.style.color       = z.badgeColor;
+  badgeTxt.parentElement.style.background = z.badgeBg;
+
+  slider.style.setProperty('--fill-color', z.sliderColor);
+  updateSliderFill();
+
+  pageEl.classList.toggle('tilt', z.tilt);
+  pageEl.classList.toggle('glitch-page', z.glitch);
+  titleEl.classList.toggle('glitch-txt', z.glitch);
+
+  if (z.hearts && !heartTimer) {
+    heartTimer = setInterval(spawnHeart, 550);
+  } else if (!z.hearts && heartTimer) {
+    clearInterval(heartTimer);
+    heartTimer = null;
+  }
+}
+
+/* ─── SLIDER ─────────────────────────────────────────────── */
+function updateSliderFill() {
+  const v = parseInt(slider.value);
+  const z = zones.find(z => v >= z.min && v <= z.max) || zones[0];
+  const color = z ? z.sliderColor : '#1d6e42';
+  slider.style.background = `linear-gradient(to right, ${color} 0%, ${color} ${v}%, #d5d0c8 ${v}%, #d5d0c8 100%)`;
+}
+
+slider.addEventListener('input', function () {
+  const v = parseInt(this.value);
+  pctVal.textContent = v + '%';
+  updateSliderFill();
+
+  if (v === 100) {
+    pageEl.classList.add('do-shake');
+    pageEl.addEventListener('animationend', () => pageEl.classList.remove('do-shake'), { once: true });
+    setTimeout(() => {
+      document.getElementById('crash-screen').classList.add('show');
+    }, 450);
+    return;
+  }
+
+  const z = zones.find(z => v >= z.min && v <= z.max);
+  if (!z) return;
+  const idx = zones.indexOf(z);
+  if (idx !== lastZone) { applyZone(z); lastZone = idx; }
+
+  if (v === 0) revealKnock();
+});
+
+/* ─── HEARTS ─────────────────────────────────────────────── */
+function spawnHeart() {
+  const h = document.createElement('div');
+  h.className = 'hrt';
+  h.textContent = ['♥','❤','♡','✦'][Math.floor(Math.random() * 4)];
+  h.style.left   = Math.random() * 92 + 'vw';
+  h.style.bottom = '5%';
+  h.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+  h.style.color  = ['#d44080','#e05090','#c03070','#e87090'][Math.floor(Math.random()*4)];
+  heartsLayer.appendChild(h);
+  setTimeout(() => h.remove(), 4000);
+}
+
+/* ─── KNOCK KNOCK REVEAL ─────────────────────────────────── */
+function revealKnock() {
+  if (knockRevealed) return;
+  knockRevealed = true;
+  knockSec.classList.add('reveal');
+  ['kr1','kr2','kr3','kr4','kr5'].forEach((id, i) => {
+    setTimeout(() => {
+      document.getElementById(id).classList.add('show');
+    }, i * 600);
+  });
+  setTimeout(() => {
+    yesnoWrap.classList.add('show');
+  }, 5 * 600 + 300);
+}
+
+/* ─── YES / NO ───────────────────────────────────────────── */
+function handleYes() {
+  yesnoWrap.style.display = 'none';
+  yesResult.style.display = 'block';
+  launchConfetti();
+}
+
+function handleNo() {
+  noCount++;
+  const idx = Math.min(noCount, noResponses.length - 1);
+  const r   = noResponses[idx];
+  document.getElementById('btn-no').textContent = '[ ' + r.no + ' ]';
+  document.getElementById('btn-yes').textContent = r.yesLabel;
+  noCountEl.textContent = r.note || '';
+  noCountEl.style.color = noCount >= 6 ? '#1d6e42' : '';
+  document.getElementById('btn-no').style.transform = 'scale(0.97)';
+  setTimeout(() => document.getElementById('btn-no').style.transform = '', 150);
+}
+
+/* ─── CONFETTI ───────────────────────────────────────────── */
+function launchConfetti() {
+  const cols = ['#1d6e42','#f0c040','#d44080','#378add','#e87030','#9b59b6'];
+  for (let i = 0; i < 70; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'conf-piece';
+      c.style.left   = Math.random() * 100 + 'vw';
+      c.style.top    = '-10px';
+      c.style.background = cols[Math.floor(Math.random() * cols.length)];
+      c.style.width  = (6 + Math.random() * 5) + 'px';
+      c.style.height = (6 + Math.random() * 5) + 'px';
+      c.style.animationDuration = (1.8 + Math.random() * 1.4) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 3500);
+    }, i * 25);
+  }
+}
+
+/* ─── HARD RESET ─────────────────────────────────────────── */
+function hardReset() {
+  document.getElementById('crash-screen').classList.remove('show');
+  slider.value = 0;
+  pctVal.textContent = '0%';
+  lastZone = -1;
+  pageEl.classList.remove('tilt', 'glitch-page', 'do-shake');
+  titleEl.classList.remove('glitch-txt');
+  if (heartTimer) { clearInterval(heartTimer); heartTimer = null; }
+  heartsLayer.innerHTML = '';
+  applyZone(zones[0]);
+  updateSliderFill();
+  revealKnock();
+}
+
+/* ─── INIT ───────────────────────────────────────────────── */
+applyZone(zones[0]);
+updateSliderFill();
+revealKnock();
+</script>
+</body>
+</html>
